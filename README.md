@@ -8,7 +8,7 @@ Once the video is generated, it is uploaded to Youtube and published as a Youtub
 Just specify your subject and language, and YASGU will take care of the rest.
 
 Example of an automatically generated video in less than 5 minutes with YASGU : 
-![](assets/docs/example.mp4)
+https://github.com/hankerspace/YASGU/raw/master/assets/docs/example.mp4
 
 ## Features 
 
