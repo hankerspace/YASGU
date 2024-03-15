@@ -1,0 +1,16 @@
+wheel
+termcolor
+schedule
+TTS
+prettytable
+webdriver_manager
+selenium_firefox
+selenium
+g4f
+moviepy
+Pillow==9.5.0
+yagmail
+assemblyai
+srt_equalizer
+undetected_chromedriver
+platformdirs
