@@ -12,6 +12,31 @@ from src.utils.constants import parse_model
 from src.utils.status import info, error, success
 from src.utils.tts import TTS
 from src.utils.video import generate_subtitles, generate_video
+from src.utils.web_browser import init_browser, upload_video
+
+
+def generate_script_to_speech(script) -> str:
+    """
+    Converts the generated script into Speech using CoquiTTS and returns the path to the wav file.
+
+    Args:
+        script (str): The script to convert to speech.
+
+    Returns:
+        path_to_wav (str): Path to generated audio (WAV Format).
+    """
+    path = os.path.join(ROOT_DIR, "temp", str(uuid4()) + ".wav")
+
+    # Clean script, remove every character that is not a word character,
+    # a space, a period, a question mark, or an exclamation mark.
+    script = re.sub(r'[^\w\s.?!]', '', script)
+
+    TTS().synthesize(script, path)
+
+    if get_verbose():
+        info(f" => Wrote TTS to \"{path}\"")
+
+    return path
 
 
 class Generator:
@@ -62,7 +87,7 @@ class Generator:
                     if get_verbose():
                         info(f"Generated Image: {image} for prompt: {prompt}")
 
-                audio_file = self.generate_script_to_speech(script)
+                audio_file = generate_script_to_speech(script)
                 srt_file = generate_subtitles(audio_file)
 
                 video_file = generate_video(images_files, audio_file, srt_file, self.font, self.subtitles_max_chars,
@@ -71,7 +96,8 @@ class Generator:
                                             self.audio_song_volume)
 
                 success(f"Generated Video: {video_file}")
-                done = True
+                metadata["video_path"] = video_file
+                return metadata
             except Exception as e:
                 error(f"Error occurred while generating video: {str(e)}")
                 done = False
@@ -223,6 +249,7 @@ class Generator:
         Args:
             script (str): The script to generate prompts for.
             subject (str): The subject of the video.
+            n_prompts (int): The number of prompts to generate.
 
         Returns:
             image_prompts (List[str]): Generated List of image prompts.
@@ -270,8 +297,6 @@ class Generator:
             if get_verbose():
                 info(f" => Generated Image Prompts: {image_prompts}")
 
-        success(f"Generated {len(image_prompts)} Image Prompts.")
-
         return image_prompts
 
     def generate_image(self, prompt: str) -> str:
@@ -300,10 +325,6 @@ class Generator:
                 ok = True
 
                 image_url = parsed["url"]
-
-                if get_verbose():
-                    info(f" => Generated Image: {image_url}")
-
                 image_path = os.path.join(ROOT_DIR, "temp", str(uuid4()) + ".png")
 
                 with open(image_path, "wb") as image_file:
@@ -317,25 +338,18 @@ class Generator:
 
                 return image_path
 
-    def generate_script_to_speech(self, script) -> str:
+    def upload_video(self, video_path, title, description) -> str:
         """
-        Converts the generated script into Speech using CoquiTTS and returns the path to the wav file.
 
         Args:
-            script (str): The script to convert to speech.
+            video_path: the path to the video file
+            title: the title of the video
+            description: the description of the video
 
         Returns:
-            path_to_wav (str): Path to generated audio (WAV Format).
+            url (str): The URL of the uploaded video.
+
         """
-        path = os.path.join(ROOT_DIR, "temp", str(uuid4()) + ".wav")
-
-        # Clean script, remove every character that is not a word character,
-        # a space, a period, a question mark, or an exclamation mark.
-        script = re.sub(r'[^\w\s.?!]', '', script)
-
-        TTS().synthesize(script, path)
-
-        if get_verbose():
-            info(f" => Wrote TTS to \"{path}\"")
-
-        return path
+        browser = init_browser(self.firefox_profile)
+        url = upload_video(browser, video_path, title, description, self.is_for_kids)
+        return url

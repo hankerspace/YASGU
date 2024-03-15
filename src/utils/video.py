@@ -60,7 +60,7 @@ def generate_video(images, tts_path, subtitles_path, font, subtitles_max_chars, 
     Returns:
         path (str): The path to the generated MP4 File.
     """
-    combined_image_path = os.path.join(ROOT_DIR, "temp", str(uuid4()) + "temp4")
+    combined_image_path = os.path.join(ROOT_DIR, "temp", str(uuid4()) + ".mp4")
     threads = get_threads()
     tts_clip = AudioFileClip(tts_path)
     max_duration = tts_clip.duration
@@ -77,8 +77,6 @@ def generate_video(images, tts_path, subtitles_path, font, subtitles_max_chars, 
         size=(1080, 1920),
         method="caption",
     )
-
-    print(colored("[+] Combining images...", "blue"))
 
     clips = []
     tot_dur = 0

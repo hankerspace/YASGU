@@ -7,10 +7,8 @@ def main():
     generators_configs = get_generators()
     for generator_config in generators_configs:
         generator = Generator(generator_config)
-        generator.generate_video()
-
-
-
+        data = generator.generate_video()
+        generator.upload_video(data["video_path"], data["title"], data["description"])
 
 if __name__ == "__main__":
     # Setup file tree

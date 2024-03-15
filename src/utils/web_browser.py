@@ -6,8 +6,10 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 
-from constants import *
-from utils import *
+from utils.config import *
+from utils.constants import *
+from utils.status import *
+from utils.utils import build_url
 
 
 def init_browser(firefox_profile_path: str) -> webdriver.Firefox:
@@ -56,7 +58,7 @@ def get_channel_id(browser) -> str:
     return channel_id
 
 
-def upload_video(browser, video_path, title, description) -> str:
+def upload_video(browser, video_path, title, description, is_for_kids) -> str:
     """
     Uploads the video to YouTube.
 
@@ -120,7 +122,7 @@ def upload_video(browser, video_path, title, description) -> str:
         is_for_kids_checkbox = driver.find_element(By.NAME, YOUTUBE_MADE_FOR_KIDS_NAME)
         is_not_for_kids_checkbox = driver.find_element(By.NAME, YOUTUBE_NOT_MADE_FOR_KIDS_NAME)
 
-        if not get_is_for_kids():
+        if not is_for_kids:
             is_not_for_kids_checkbox.click()
         else:
             is_for_kids_checkbox.click()
