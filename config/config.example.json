@@ -1,15 +1,47 @@
 {
   "verbose": true,
   "headless": false,
+  "threads": 4,
 
-  "llm": "claude_3_sonnet",
-  "image_prompt_llm": "llama2_70b",
-  "image_model": "prodia",
-  "threads": 2,
-  "zip_url": "",
-  "is_for_kids": false,
+  "assembly_ai_api_key": "xx",
+  "imagemagick_path": "C:\\Program Files\\ImageMagick\\magick.exe",
 
-  "assembly_ai_api_key": "",
-  "font": "typewcond_bold.otf",
-  "imagemagick_path": "C:\\Program Files\\ImageMagick\\magick.exe"
+  "generators": [
+    {
+      "id": 1,
+      "language": "English",
+      "subject": "Facts about a random animal",
+      "llm": "dolphin_mixtral_8x7b",
+      "image_prompt_llm": "llama2_70b",
+      "image_model": "lexica",
+      "images_count": 10,
+      "is_for_kids": false,
+      "font": "bold_font.ttf",
+      "subtitles_max_chars": 50,
+      "subtitles_font_size": 110,
+      "subtitles_font_color": "white",
+      "subtitles_font_outline_color": "black",
+      "subtitles_font_outline_thickness": 2,
+      "audio_song_volume": 0.1,
+      "firefox_profile": "C:\\Users\\Administrateur\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\xxxx"
+    },
+    {
+      "id": 2,
+      "language": "English",
+      "subject": "Love quotes",
+      "llm": "dolphin_mixtral_8x7b",
+      "image_prompt_llm": "llama2_70b",
+      "image_model": "lexica",
+      "images_count": 10,
+      "is_for_kids": false,
+      "font": "bold_font.ttf",
+      "subtitles_max_chars": 20,
+      "subtitles_font_size": 110,
+      "subtitles_font_color": "white",
+      "subtitles_font_outline_color": "black",
+      "subtitles_font_outline_thickness": 2,
+      "audio_song_volume": 0.1,
+      "firefox_profile": "C:\\Users\\Administrateur\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\xxxx"
+    }
+  ]
 }
