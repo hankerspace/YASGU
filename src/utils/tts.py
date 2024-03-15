@@ -1,13 +1,16 @@
 import os
 
-from config import ROOT_DIR
 from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
+
+from src.utils.config import ROOT_DIR
+
 
 class TTS:
     """
     Class for Text-to-Speech using Coqui TTS.
     """
+
     def __init__(self) -> None:
         """
         Initializes the TTS class.
@@ -35,7 +38,7 @@ class TTS:
         # Download vocoder_models/en/ljspeech/hifigan_v2 as our vocoder
         voc_path, voc_config_path, _ = self._model_manager. \
             download_model("vocoder_models/en/ljspeech/univnet")
-        
+
         # Initialize the Synthesizer
         self._synthesizer = Synthesizer(
             tts_checkpoint=self._model_path,
@@ -72,4 +75,3 @@ class TTS:
         self.synthesizer.save_wav(outputs, output_file)
 
         return output_file
-    

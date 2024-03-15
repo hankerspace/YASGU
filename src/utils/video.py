@@ -6,8 +6,11 @@ from moviepy.config import change_settings
 from moviepy.editor import *
 from moviepy.video.fx.all import crop
 from moviepy.video.tools.subtitles import SubtitlesClip
+from termcolor import colored
 
-from utils import *
+from src.utils.config import get_fonts_dir, get_assemblyai_api_key, ROOT_DIR, get_imagemagick_path, get_threads, \
+    get_verbose
+from src.utils.utils import choose_random_song, equalize_subtitles, info, success
 
 # Set ImageMagick Path
 change_settings({"IMAGEMAGICK_BINARY": get_imagemagick_path()})
@@ -38,7 +41,7 @@ def generate_subtitles(audio_path: str) -> str:
     return srt_path
 
 
-def generate_video(images, tts_path, subtitles_path) -> str:
+def generate_video(images, tts_path, subtitles_path, font, subtitles_max_chars, subtitles_size, subtitles_color, subtitles_stroke_color, subtitles_stroke_thickness, audio_volume) -> str:
     """
     Combines everything into the final video.
 
@@ -46,6 +49,13 @@ def generate_video(images, tts_path, subtitles_path) -> str:
         images (List[str]): The list of image paths to combine
         tts_path (str): The path to the TTS file
         subtitles_path (str): The path to the subtitles file
+        font (str): The font to use for the subtitles
+        subtitles_max_chars (int): The maximum amount of characters in a subtitle
+        subtitles_size (int): The size of the subtitles
+        subtitles_color (str): The color of the subtitles
+        subtitles_stroke_color (str): The stroke color of the subtitles
+        subtitles_stroke_thickness (int): The stroke thickness of the subtitles
+        audio_volume (float): The volume of the audio
 
     Returns:
         path (str): The path to the generated MP4 File.
@@ -59,11 +69,11 @@ def generate_video(images, tts_path, subtitles_path) -> str:
     # Make a generator that returns a TextClip when called with consecutive
     generator = lambda txt: TextClip(
         txt,
-        font=os.path.join(get_fonts_dir(), get_font()),
-        fontsize=110,
-        color="#FFFFFF",
-        stroke_color="black",
-        stroke_width=6,
+        font=os.path.join(get_fonts_dir(), font),
+        fontsize=subtitles_size,
+        color=subtitles_color,
+        stroke_color=subtitles_stroke_color,
+        stroke_width=subtitles_stroke_thickness,
         size=(1080, 1920),
         method="caption",
     )
@@ -106,7 +116,7 @@ def generate_video(images, tts_path, subtitles_path) -> str:
     random_song = choose_random_song()
 
     # Equalize srt file
-    equalize_subtitles(subtitles_path, 10)
+    equalize_subtitles(subtitles_path, subtitles_max_chars)
 
     # Burn the subtitles into the video
     subtitles = SubtitlesClip(subtitles_path, generator)
@@ -115,7 +125,7 @@ def generate_video(images, tts_path, subtitles_path) -> str:
     random_song_clip = AudioFileClip(random_song).set_fps(44300)
 
     # Turn down volume
-    random_song_clip = random_song_clip.fx(afx.volumex, 0.1)
+    random_song_clip = random_song_clip.fx(afx.volumex, audio_volume)
     comp_audio = CompositeAudioClip([
         tts_clip.set_fps(44300),
         random_song_clip

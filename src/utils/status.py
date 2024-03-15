@@ -1,5 +1,6 @@
 from termcolor import colored
 
+
 def error(message: str, show_emoji: bool = True) -> None:
     """
     Prints an error message.
@@ -13,6 +14,7 @@ def error(message: str, show_emoji: bool = True) -> None:
     """
     emoji = "❌" if show_emoji else ""
     print(colored(f"{emoji} {message}", "red"))
+
 
 def success(message: str, show_emoji: bool = True) -> None:
     """
@@ -28,6 +30,7 @@ def success(message: str, show_emoji: bool = True) -> None:
     emoji = "✅" if show_emoji else ""
     print(colored(f"{emoji} {message}", "green"))
 
+
 def info(message: str, show_emoji: bool = True) -> None:
     """
     Prints an info message.
@@ -42,6 +45,7 @@ def info(message: str, show_emoji: bool = True) -> None:
     emoji = "ℹ️" if show_emoji else ""
     print(colored(f"{emoji} {message}", "magenta"))
 
+
 def warning(message: str, show_emoji: bool = True) -> None:
     """
     Prints a warning message.
@@ -55,6 +59,7 @@ def warning(message: str, show_emoji: bool = True) -> None:
     """
     emoji = "⚠️" if show_emoji else ""
     print(colored(f"{emoji} {message}", "yellow"))
+
 
 def question(message: str, show_emoji: bool = True) -> str:
     """
