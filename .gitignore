@@ -2,5 +2,6 @@ __pycache__
 config/config.json
 temp/
 .venv/
-assets/songs/
-assets/fonts/
+assets/songs/*
+assets/fonts/*
+.idea/

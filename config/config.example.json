@@ -1,0 +1,15 @@
+{
+  "verbose": true,
+  "headless": false,
+
+  "llm": "claude_3_sonnet",
+  "image_prompt_llm": "llama2_70b",
+  "image_model": "prodia",
+  "threads": 2,
+  "zip_url": "",
+  "is_for_kids": false,
+
+  "assembly_ai_api_key": "",
+  "font": "typewcond_bold.otf",
+  "imagemagick_path": "C:\\Program Files\\ImageMagick\\magick.exe"
+}
