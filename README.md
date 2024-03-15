@@ -7,6 +7,9 @@ The main strength of YASGU is that it can generate videos fully automatically, f
 Once the video is generated, it is uploaded to Youtube and published as a Youtube Shorts video.
 Just specify your subject and language, and YASGU will take care of the rest.
 
+Example of an automatically generated video in less than 5 minutes with YASGU : 
+![](assets/docs/example.mp4)
+
 ## Features 
 
 - Fully automatic video generation and upload to Youtube.
@@ -49,8 +52,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-2. Download the font used for the video script and place it in the `assets` folder. The font used is [Noto Sans](https://www.google.com/get/noto/). 
-   You can download the font from [Google Fonts](https://fonts.google.com/specimen/Noto+Sans).
+2. Download the font used for the video script and place it in the `assets` folder. 
+   You can download the font from [Google Fonts](https://fonts.google.com/) or Dafont for other fonts.
 3. Download some free songs from [YouTube Audio Library](https://www.youtube.com/audiolibrary/music) and place them in the `assets` folder. 
    You can use the `youtube-dl` tool to download the songs from the Youtube Audio Library.
 
