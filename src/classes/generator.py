@@ -148,11 +148,7 @@ class Generator:
             f"Be creative! Find a unique angle or perspective on the topic."
             f"Only return the topic, nothing else.", parse_model(self.llm))
 
-        if "Title: " in completion:
-            completion = completion[completion.find("Title: ") + 7:]
         completion = completion.replace('"', '')
-        if "\n\n" in completion:
-            completion = completion[completion.find("\n\n") + 2:]
 
         if not completion:
             error("Failed to generate Topic.")
@@ -201,9 +197,6 @@ class Generator:
             error("The generated script is empty.")
             return ""
 
-        if "\n\n" in completion:
-            completion = completion[completion.find("\n\n") + 2:]
-
         return completion
 
     def generate_metadata(self, subject, script, language) -> dict:
@@ -220,20 +213,17 @@ class Generator:
         title = self.generate_response(
             f"Please generate a YouTube Short Video Title for the following subject, including hashtags: {subject}. "
             f"Only return the title, nothing else. "
-            f"Limit the title under 100 characters. "
+            f"Limit the title under 80 characters. "
             f"YOU MUST WRITE THE TITLE IN THE {language} LANGUAGE.", parse_model(self.llm))
-        title = title.replace('"', '')
-        title = title.replace('\n\n', '')
 
         description = self.generate_response(
             f"Please generate a YouTube Short Video Description for the following script: {script}. "
             f"Only return the description, nothing else."
+             f"Limit the description under 300 characters. "
             f"YOU MUST WRITE THE DESCRIPTION IN THE {language} LANGUAGE.", parse_model(self.llm)
         )
 
         description = description.replace('"', '')
-        if "\n\n" in description:
-            description = description[description.find("\n\n") + 2:]
 
         metadata = {
             "title": title,

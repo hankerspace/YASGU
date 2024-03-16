@@ -1,6 +1,6 @@
 # YASGU : Youtube Automatised Shorts Generator And Uploader
 
-<center><img alt="img.png" height="300" src="assets/docs/img.png" width="300"/></center>
+<img alt="img.png" height="300" src="assets/docs/img.png" width="300"/>
 
 YASGU is a tool to generate and upload Youtube Shorts videos. 
 The main strength of YASGU is that it can generate videos fully automatically, from the script to the voiceover and the illustration images. 
@@ -9,6 +9,22 @@ Just specify your subject and language, and YASGU will take care of the rest.
 
 Example of an automatically generated video in less than 5 minutes with YASGU : 
 https://github.com/hankerspace/YASGU/raw/master/assets/docs/example.mp4
+
+<!-- TOC -->
+* [YASGU : Youtube Automatised Shorts Generator And Uploader](#yasgu--youtube-automatised-shorts-generator-and-uploader)
+  * [Features](#features-)
+  * [Prerequisites](#prerequisites)
+  * [Installation](#installation)
+  * [Configuration](#configuration)
+    * [Generators configuration](#generators-configuration)
+    * [Available LLMs models](#available-llms-models)
+    * [Available Image Generation models](#available-image-generation-models)
+  * [Tips](#tips)
+  * [Usage](#usage)
+  * [Roadmap](#roadmap)
+  * [Acknowledgments](#acknowledgments)
+  * [Disclaimer](#disclaimer)
+<!-- TOC -->
 
 ## Features 
 
@@ -126,6 +142,32 @@ A generator is designed to create a specific kind of video, you can specify the 
 | animefy | animefy       | Huggingface   | 4+ Providers           | [huggingface.co](https://huggingface.co/) |
 | raava   | raava         | Huggingface   | g4f.Provider.DeepInfra | [huggingface.co](https://huggingface.co/) |
 | shonin  | shonin        | Huggingface   | g4f.Provider.DeepInfra | [huggingface.co](https://huggingface.co/) |
+
+## Tips
+
+You can tweak the models used for the video generation by changing the `llm` and `image_prompt_llm` values in the configuration file.
+
+Currently, my bests results are with the `claude_3_sonnet` model for the script and the `mixtral_8x7b` model for the image prompt. Realistic pictures are generated with the `lexica` model.
+
+## Usage
+
+To generate and upload a video for all the generators specified in the configuration file, you can run the following command:
+
+```bash
+python main.py
+```
+
+## Roadmap
+
+- [x] Manage multiple generators at the same time.
+- [x] Add support for multiple languages.
+- [x] Add support for different LLMs models.
+- [ ] Externalize prompts to a file to allow for easier editing.
+- [ ] Check and cleanup generated texts with a LLM agent
+- [ ] Improve the upload process to avoid some issues with the Youtube upload.
+- [ ] Use animated image generation models to generate animated illustrations.
+- [ ] Add scheduling for the video generation and upload.
+- [ ] Add support for other video platforms such as TikTok, Instagram, etc.
 
 ## Acknowledgments
 
