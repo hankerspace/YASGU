@@ -165,7 +165,7 @@ python main.py
 - [ ] Externalize prompts to a file to allow for easier editing.
 - [ ] Check and cleanup generated texts with a LLM agent
 - [ ] Improve the upload process to avoid some issues with the Youtube upload.
-- [ ] Use animated image generation models to generate animated illustrations.
+- [ ] **Use animated image generation models to generate animated illustrations.**
 - [ ] Add scheduling for the video generation and upload.
 - [ ] Add support for other video platforms such as TikTok, Instagram, etc.
 
