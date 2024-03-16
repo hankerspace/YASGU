@@ -153,7 +153,7 @@ def upload_video(browser, video_path, title, description, is_for_kids) -> str:
 
         # Set as unlisted
         if verbose:
-            info("\t=> Setting as unlisted...")
+            info("\t=> Setting as public...")
 
         radio_button = driver.find_elements(By.XPATH, YOUTUBE_RADIO_BUTTON_XPATH)
         radio_button[2].click()
