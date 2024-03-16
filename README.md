@@ -66,7 +66,7 @@ The configuration file is located at `config/config.json`. You can copy the exam
 - threads : The number of threads to use for generating the video.
 - assembly_ai_api_key : The API key for the AssemblyAI service. You can get an API key from the [AssemblyAI website](https://www.assemblyai.com/).
 - imagemagick_path : The path to the ImageMagick installation binary (.exe for Windows, no extension for Unix).
-- generators : The list of generators to run.
+- generators : The list of generators to run. You can find more information about the generators configuration in the [Generators configuration](#generators-configuration) section.
 
 ### Generators configuration
 
@@ -137,6 +137,4 @@ A generator is designed to create a specific kind of video, you can specify the 
 
 This project is for educational purposes only. The author will not be responsible for any misuse of the information
 provided. All the information on this website is published in good faith and for general information purpose only. The
-author does not make any warranties about the completeness, reliability, and accuracy of this information. Any action
-you take upon the information you find on this website (FujiwaraChoki/MoneyPrinterV2), is strictly at your own risk. The
-author will not be liable for any losses and/or damages in connection with the use of our website.
+author does not make any warranties about the completeness, reliability, and accuracy of this information. 
