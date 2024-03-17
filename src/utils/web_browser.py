@@ -73,6 +73,10 @@ def upload_video(browser, video_path, title, description, is_for_kids) -> str:
     """
     try:
 
+        # limit title and description characters
+        title = title[:100]
+        description = description[:300]
+
         driver = browser
         verbose = get_verbose()
 

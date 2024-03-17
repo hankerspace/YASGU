@@ -149,6 +149,8 @@ You can tweak the models used for the video generation by changing the `llm` and
 
 Currently, my bests results are with the `claude_3_sonnet` model for the script and the `mixtral_8x7b` model for the image prompt. Realistic pictures are generated with the `lexica` model.
 
+You can tweak prompts in the `constants.py` file to get better results with other LLMs models.
+
 ## Usage
 
 To generate and upload a video for all the generators specified in the configuration file, you can run the following command:
@@ -162,7 +164,7 @@ python main.py
 - [x] Manage multiple generators at the same time.
 - [x] Add support for multiple languages.
 - [x] Add support for different LLMs models.
-- [ ] Externalize prompts to a file to allow for easier editing.
+- [x] Externalize prompts to a file to allow for easier editing.
 - [ ] Check and cleanup generated texts with a LLM agent
 - [ ] Improve the upload process to avoid some issues with the Youtube upload.
 - [ ] **Use animated image generation models to generate animated illustrations.**

@@ -8,11 +8,13 @@ import g4f
 import requests
 
 from src.utils.config import ROOT_DIR, get_verbose
-from src.utils.constants import parse_model
+from src.utils.constants import parse_model, build_generate_topic_prompt, build_generate_script_prompt, \
+    build_generate_title_prompt, build_generate_description_prompt, build_generate_image_prompts
 from src.utils.status import info, error, success
 from src.utils.tts import TTS
 from src.utils.video import generate_subtitles, generate_video
 from src.utils.web_browser import init_browser, upload_video
+from utils.utils import close_running_selenium_instances
 
 
 def generate_script_to_speech(script) -> str:
@@ -142,11 +144,7 @@ class Generator:
         Returns:
             topic (str): The generated topic.
         """
-        completion = self.generate_response(
-            f"Please generate a specific video idea that takes about the following topic: {subject}. "
-            f"Make it exactly one sentence. "
-            f"Be creative! Find a unique angle or perspective on the topic."
-            f"Only return the topic, nothing else.", parse_model(self.llm))
+        completion = self.generate_response(build_generate_topic_prompt(subject), parse_model(self.llm))
 
         completion = completion.replace('"', '')
 
@@ -166,29 +164,7 @@ class Generator:
         Returns:
             script (str): The script of the video.
         """
-        prompt = f"""
-        Generate a script for a video in 4 sentences, depending on the subject of the video.
-
-        The script is to be returned as a string with the specified number of paragraphs.
-
-        Here is an example of a string:
-        "This is an example string."
-
-        Do not under any circumstance reference this prompt in your response.
-
-        Get straight to the point, don't start with unnecessary things like, "welcome to this video" or "Sure here is a script".
-
-        Obviously, the script should be related to the subject of the video.
-
-        YOU MUST NOT EXCEED THE 4 SENTENCES LIMIT. MAKE SURE THE 4 SENTENCES ARE SHORT. LESS THAN 5000 CHARACTER IN TOTAL BUT MORE THAN 2000 CHARACTERS IN TOTAL.
-        YOU MUST NOT INCLUDE ANY TYPE OF MARKDOWN OR FORMATTING IN THE SCRIPT, NEVER USE A TITLE.
-        YOU MUST WRITE THE SCRIPT IN THE LANGUAGE SPECIFIED IN [LANGUAGE].
-        ONLY RETURN THE RAW CONTENT OF THE SCRIPT. DO NOT INCLUDE "VOICEOVER", "NARRATOR" OR SIMILAR INDICATORS OF WHAT SHOULD BE SPOKEN AT THE BEGINNING OF EACH PARAGRAPH OR LINE. YOU MUST NOT MENTION THE PROMPT, OR ANYTHING ABOUT THE SCRIPT ITSELF. ALSO, NEVER TALK ABOUT THE AMOUNT OF PARAGRAPHS OR LINES. JUST WRITE THE SCRIPT
-
-        Subject: {subject}
-        Language: {language}
-        """
-        completion = self.generate_response(prompt, parse_model(self.llm))
+        completion = self.generate_response(build_generate_script_prompt(subject, language), parse_model(self.llm))
 
         # Apply regex to remove *
         completion = re.sub(r"\*", "", completion)
@@ -210,18 +186,8 @@ class Generator:
         Returns:
             metadata (dict): The generated metadata.
         """
-        title = self.generate_response(
-            f"Please generate a YouTube Short Video Title for the following subject, including hashtags: {subject}. "
-            f"Only return the title, nothing else. "
-            f"Limit the title under 80 characters. "
-            f"YOU MUST WRITE THE TITLE IN THE {language} LANGUAGE.", parse_model(self.llm))
-
-        description = self.generate_response(
-            f"Please generate a YouTube Short Video Description for the following script: {script}. "
-            f"Only return the description, nothing else."
-             f"Limit the description under 300 characters. "
-            f"YOU MUST WRITE THE DESCRIPTION IN THE {language} LANGUAGE.", parse_model(self.llm)
-        )
+        title = self.generate_response(build_generate_title_prompt(subject, language), parse_model(self.llm))
+        description = self.generate_response(build_generate_description_prompt(script, language), parse_model(self.llm))
 
         description = description.replace('"', '')
 
@@ -245,31 +211,7 @@ class Generator:
             image_prompts (List[str]): Generated List of image prompts.
         """
 
-        prompt = f"""
-        Generate {n_prompts} Image Prompts for AI Image Generation,
-        depending on the subject of a video.
-        Subject: {subject}
-
-        The image prompts are to be returned as
-        a JSON-Array of strings.
-
-        Each search term should consist of a full sentence,
-        always add the main subject of the video.
-
-        Be emotional and use interesting adjectives to make the
-        Image Prompt as detailed as possible.
-
-        YOU MUST ONLY RETURN THE JSON-ARRAY OF STRINGS.
-        YOU MUST NOT RETURN ANYTHING ELSE. 
-        YOU MUST NOT RETURN THE SCRIPT.
-
-        The search terms must be related to the subject of the video.
-        Here is an example of a JSON-Array of strings:
-        ["image prompt 1", "image prompt 2", "image prompt 3"]
-
-        For context, here is the full text:
-        {script}
-        """
+        prompt = build_generate_image_prompts(script, subject, n_prompts)
 
         completion = str(self.generate_response(prompt, parse_model(self.image_prompt_llm))) \
             .replace("```json", "") \
@@ -340,6 +282,9 @@ class Generator:
             url (str): The URL of the uploaded video.
 
         """
+        info("Uploading video to YouTube...")
+        #close_running_selenium_instances()
         browser = init_browser(self.firefox_profile)
         url = upload_video(browser, video_path, title, description, self.is_for_kids)
+        success(f"Uploaded Video: {url}")
         return url
