@@ -165,6 +165,7 @@ python main.py
 - [x] Add support for multiple languages.
 - [x] Add support for different LLMs models.
 - [x] Externalize prompts to a file to allow for easier editing.
+- [x] Check if subject not already been covered.
 - [ ] Check and cleanup generated texts with a LLM agent
 - [ ] Improve the upload process to avoid some issues with the Youtube upload.
 - [ ] **Use animated image generation models to generate animated illustrations.**
