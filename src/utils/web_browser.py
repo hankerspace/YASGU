@@ -110,12 +110,16 @@ def upload_video(browser, video_path, title, description, is_for_kids) -> str:
         if verbose:
             info("\t=> Setting description...")
 
-        # Set description
-        time.sleep(10)
-        description_el.click()
-        time.sleep(0.5)
-        description_el.clear()
-        description_el.send_keys(description)
+        try:
+            # Set description
+            time.sleep(5)
+            description_el.click()
+            time.sleep(0.5)
+            description_el.clear()
+            description_el.send_keys(description)
+        except:
+            warning("Description not clickable, skipping...")
+            # sometimes the description is not clickable dunno why at this point
 
         time.sleep(0.5)
 
