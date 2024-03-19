@@ -1,3 +1,6 @@
+import random
+from time import sleep
+
 from src.classes.generator import Generator
 from src.utils.config import *
 from src.utils.utils import rem_temp_files
@@ -26,4 +29,9 @@ if __name__ == "__main__":
     # Remove temporary files
     rem_temp_files()
 
-    main()
+    while True:
+        try:
+            main()
+        except Exception as e:
+            error(f"Error occurred: {str(e)}")
+        sleep(3600*8 + random.randint(0, 3600))
