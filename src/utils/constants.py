@@ -11,6 +11,11 @@ YOUTUBE_NEXT_BUTTON_ID = "next-button"
 YOUTUBE_RADIO_BUTTON_XPATH = "//*[@id=\"radioLabel\"]"
 YOUTUBE_DONE_BUTTON_ID = "done-button"
 
+def build_is_topic_already_covered_prompt(already_covered: str, subject: str) -> str:
+    return (f"Here is a list of already covered subject : {already_covered}. "
+            f"Tell me if the following subject looks like one we already covered :  {subject}. "
+            f"Just answer with 'yes' or 'no', nothing else.")
+
 def build_generate_topic_prompt(subject: str) -> str:
     return (f"Please generate a specific video idea that takes about the following topic: {subject}. "
             f"Make it exactly one sentence. "

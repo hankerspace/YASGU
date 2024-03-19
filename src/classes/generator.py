@@ -4,9 +4,11 @@ import re
 from typing import List
 from uuid import uuid4
 
+from classes.video import Video, load_videos_from_json, save_videos_to_json
 from src.utils.config import ROOT_DIR, get_verbose
 from src.utils.constants import parse_model, build_generate_topic_prompt, build_generate_script_prompt, \
-    build_generate_title_prompt, build_generate_description_prompt, build_generate_image_prompts
+    build_generate_title_prompt, build_generate_description_prompt, build_generate_image_prompts, \
+    build_is_topic_already_covered_prompt
 from src.utils.status import info, error, success
 from src.utils.tts import TTS
 from src.utils.video_generator import generate_subtitles, generate_video
@@ -65,9 +67,19 @@ class Generator:
         done = False
         while not done:
             try:
-                if get_verbose():
-                    info(f"Generating Video for Subject: {self.subject}")
-                topic = self.generate_topic(self.subject)
+                already_covered = True
+                topic = ""
+                while already_covered:
+                    if get_verbose():
+                        info(f"Generating Video for Subject: {self.subject}")
+                    topic = self.generate_topic(self.subject)
+
+                    if get_verbose():
+                        info(f"Check if the subject has already been covered.")
+                    already_covered = self.already_covered(self.subject)
+                    if already_covered and get_verbose():
+                        info(f"The subject has already been covered. Generating a new topic.")
+
                 if get_verbose():
                     info(f"Generated Topic: {topic}")
                 script = self.generate_script(topic, self.language)
@@ -97,6 +109,12 @@ class Generator:
 
                 success(f"Generated Video: {video_file}")
                 metadata["video_path"] = video_file
+
+                video = Video(metadata["title"], metadata["description"], self.subject, script, self.language, video_file)
+                videos = load_videos_from_json()
+                videos.append(video)
+                save_videos_to_json(videos)
+
                 return metadata
             except Exception as e:
                 error(f"Error occurred while generating video: {str(e)}")
@@ -120,6 +138,27 @@ class Generator:
             error("Failed to generate Topic.")
 
         return completion
+
+    def already_covered(self, subject) -> bool:
+        """
+        Generates a topic based on the YouTube Channel niche.
+
+        Args:
+            subject (str): The subject of the video.
+
+        Returns:
+            topic (str): The generated topic.
+        """
+        videos = load_videos_from_json()
+        subjects = ""
+        for video in videos:
+            subjects += video.subject + " ; "
+
+        completion = generate_response(build_is_topic_already_covered_prompt(subjects, subject), parse_model(self.llm))
+        if "YES" in completion.upper():
+            return True
+
+        return False
 
     def generate_script(self, subject, language) -> str:
         """
