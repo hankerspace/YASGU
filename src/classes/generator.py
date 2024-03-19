@@ -4,17 +4,15 @@ import re
 from typing import List
 from uuid import uuid4
 
-import g4f
-import requests
-
 from src.utils.config import ROOT_DIR, get_verbose
 from src.utils.constants import parse_model, build_generate_topic_prompt, build_generate_script_prompt, \
     build_generate_title_prompt, build_generate_description_prompt, build_generate_image_prompts
 from src.utils.status import info, error, success
 from src.utils.tts import TTS
-from src.utils.video import generate_subtitles, generate_video
+from src.utils.video_generator import generate_subtitles, generate_video
 from src.utils.web_browser import init_browser, upload_video
-from utils.utils import close_running_selenium_instances
+from utils.image_generator import generate_image
+from utils.llm import generate_response
 
 
 def generate_script_to_speech(script) -> str:
@@ -84,7 +82,7 @@ class Generator:
 
                 images_files = []
                 for prompt in image_prompts:
-                    image = self.generate_image(prompt)
+                    image = generate_image(prompt, self.image_model, os.path.join(ROOT_DIR, "temp"))
                     images_files.append(image)
                     if get_verbose():
                         info(f"Generated Image: {image} for prompt: {prompt}")
@@ -104,36 +102,6 @@ class Generator:
                 error(f"Error occurred while generating video: {str(e)}")
                 done = False
 
-    def generate_response(self, prompt: str, model: any) -> str:
-        """
-        Generates an LLM Response based on a prompt and the user-provided model.
-
-        Args:
-            prompt (str): The prompt to use in the text generation.
-            model (any): The model to use for the generation.
-
-        Returns:
-            response (str): The generated AI Repsonse.
-        """
-
-        response = ""
-        retry = 0
-        while not response:
-            if retry > 10:
-                error("Failed to generate response.")
-                return ""
-            response = g4f.ChatCompletion.create(
-                model=model,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            )
-            retry += 1
-        return response
-
     def generate_topic(self, subject) -> str:
         """
         Generates a topic based on the YouTube Channel niche.
@@ -144,7 +112,7 @@ class Generator:
         Returns:
             topic (str): The generated topic.
         """
-        completion = self.generate_response(build_generate_topic_prompt(subject), parse_model(self.llm))
+        completion = generate_response(build_generate_topic_prompt(subject), parse_model(self.llm))
 
         completion = completion.replace('"', '')
 
@@ -164,7 +132,7 @@ class Generator:
         Returns:
             script (str): The script of the video.
         """
-        completion = self.generate_response(build_generate_script_prompt(subject, language), parse_model(self.llm))
+        completion = generate_response(build_generate_script_prompt(subject, language), parse_model(self.llm))
 
         # Apply regex to remove *
         completion = re.sub(r"\*", "", completion)
@@ -186,8 +154,8 @@ class Generator:
         Returns:
             metadata (dict): The generated metadata.
         """
-        title = self.generate_response(build_generate_title_prompt(subject, language), parse_model(self.llm))
-        description = self.generate_response(build_generate_description_prompt(script, language), parse_model(self.llm))
+        title = generate_response(build_generate_title_prompt(subject, language), parse_model(self.llm))
+        description = generate_response(build_generate_description_prompt(script, language), parse_model(self.llm))
 
         description = description.replace('"', '')
 
@@ -213,7 +181,7 @@ class Generator:
 
         prompt = build_generate_image_prompts(script, subject, n_prompts)
 
-        completion = str(self.generate_response(prompt, parse_model(self.image_prompt_llm))) \
+        completion = str(generate_response(prompt, parse_model(self.image_prompt_llm))) \
             .replace("```json", "") \
             .replace("```", "")
 
@@ -231,45 +199,6 @@ class Generator:
 
         return image_prompts
 
-    def generate_image(self, prompt: str) -> str:
-        """
-        Generates an AI Image based on the given prompt.
-
-        Args:
-            prompt (str): Reference for image generation
-
-        Returns:
-            path (str): The path to the generated image.
-        """
-        ok = False
-        while not ok:
-            url = f"https://hercai.onrender.com/{self.image_model}/text2image?prompt={prompt}"
-
-            r = requests.get(url)
-            parsed = r.json()
-
-            if "url" not in parsed or not parsed.get("url"):
-                # Retry
-                if get_verbose():
-                    info(f" => Failed to generate Image for Prompt: {prompt}. Retrying...")
-                ok = False
-            else:
-                ok = True
-
-                image_url = parsed["url"]
-                image_path = os.path.join(ROOT_DIR, "temp", str(uuid4()) + ".png")
-
-                with open(image_path, "wb") as image_file:
-                    # Write bytes to file
-                    image_r = requests.get(image_url)
-
-                    image_file.write(image_r.content)
-
-                if get_verbose():
-                    info(f" => Wrote Image to \"{image_path}\"\n")
-
-                return image_path
-
     def upload_video(self, video_path, title, description) -> str:
         """
 
@@ -283,7 +212,7 @@ class Generator:
 
         """
         info("Uploading video to YouTube...")
-        #close_running_selenium_instances()
+        # close_running_selenium_instances()
         browser = init_browser(self.firefox_profile)
         url = upload_video(browser, video_path, title, description, self.is_for_kids)
         success(f"Uploaded Video: {url}")
