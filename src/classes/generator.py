@@ -75,8 +75,8 @@ class Generator:
                     topic = self.generate_topic(self.subject)
 
                     if get_verbose():
-                        info(f"Check if the subject has already been covered.")
-                    already_covered = self.already_covered(self.subject)
+                        info(f"Check if the subject '{topic}' has already been covered.")
+                    already_covered = self.already_covered(topic)
                     if already_covered and get_verbose():
                         info(f"The subject has already been covered. Generating a new topic.")
 
